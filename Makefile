@@ -1,9 +1,9 @@
-SERVER_URL = https://marketplace-dev.allizom.org
+SERVER_URL?=https://marketplace.allizom.org
+TEST_SUITE?=loadtest.TestBasic.run_all
+
 VIRTUALENV=virtualenv
 VENV := $(shell echo $${VIRTUAL_ENV-loads})
 PYTHON=$(VENV)/bin/python
-
-TEST_SUITE = loadtest.TestBasic.run_all
 
 # Hackety-hack around OSX system python bustage.
 # The need for this should go away with a future osx/xcode update.
