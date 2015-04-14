@@ -1,4 +1,5 @@
 import random
+from collections import Counter
 
 from loads.case import TestCase
 
@@ -14,6 +15,13 @@ class TestBasic(TestCase):
     def _build_api_url(self, path):
         return '{0}/api/v2/{1}'.format(self.server_url, path)
 
+    def _assert_2OO_and_objects(self, res):
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        assert len(data['objects'])
+        assert data['meta']
+        return data
+
     def run_all(self):
         methods = [method 
                    for method in dir(self) if method.startswith('test_')
@@ -23,17 +31,22 @@ class TestBasic(TestCase):
 
     def test_regular_search(self):
         res = self.session.get(self.search_url)
-        self.assertEqual(res.status_code, 200)
+        self._assert_2OO_and_objects(res)
 
     def test_multi_search(self):
         res = self.session.get(self.multi_search_url)
-        self.assertEqual(res.status_code, 200)
+        data = self._assert_2OO_and_objects(res)
+        counts = Counter([c['doc_type'] for c in data['objects']])
+        assert counts['webapp']
+        assert counts['website']
 
     def test_regular_search_with_q(self):
         res = self.session.get(self.search_url_q)
-        self.assertEqual(res.status_code, 200)
+        self._assert_2OO_and_objects(res)
 
     def test_multi_search_with_q(self):
         res = self.session.get(self.multi_search_url_q)
-        self.assertEqual(res.status_code, 200)
-
+        data = self._assert_2OO_and_objects(res)
+        counts = Counter([c['doc_type'] for c in data['objects']])
+        assert counts['webapp']
+        assert counts['website']
